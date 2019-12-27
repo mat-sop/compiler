@@ -1,5 +1,3 @@
-import re
-
 import ply.lex as lex
 
 
@@ -32,7 +30,7 @@ t_GEQ = 'GEQ'
 
 t_ASSIGN = 'ASSIGN'
 
-t_IF =  'IF'
+t_IF = 'IF'
 t_ELSE = 'ELSE'
 t_THEN = 'THEN'
 t_ENDIF = 'ENDIF'
