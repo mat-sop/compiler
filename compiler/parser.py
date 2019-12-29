@@ -1,5 +1,3 @@
-import sys
-
 import ply.yacc as yacc
 
 from lexer import tokens  # noqa: F401
@@ -8,6 +6,7 @@ from lexer import tokens  # noqa: F401
 def p_program_declarations_commands(p):
     '''program : DECLARE declarations BEGIN commands END'''
     print('program_declarations_commands')
+    p[0] = 'test test'
 
 
 def p_program_commands(p):
