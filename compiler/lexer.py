@@ -2,7 +2,7 @@ import ply.lex as lex
 
 
 tokens = (
-    'COMMENT', 'SEMICOLON', 'COLON', 'LEFTB', 'RIGHTB',
+    'SEMICOLON', 'COLON', 'COMMA', 'LEFTB', 'RIGHTB',
 
     'PLUS', 'MINUS', 'TIMES', 'DIV', 'MOD',
     'EQ', 'NEQ', 'LE', 'GE', 'LEQ', 'GEQ',
@@ -56,7 +56,8 @@ t_END = 'END'
 t_NUM = '[0-9]+'
 t_ID = '[_a-z]+'
 
-t_COLON = ','
+t_COMMA = ','
+t_COLON = ':'
 t_SEMICOLON = ';'
 t_LEFTB = '\('  # noqa: W605
 t_RIGHTB = '\)'  # noqa: W605
