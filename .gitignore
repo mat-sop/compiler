@@ -1,3 +1,9 @@
 .python-version
 .code/
 .vscode/
+__pycache__/
+
+parser.out
+parsetab.py
+
+test*

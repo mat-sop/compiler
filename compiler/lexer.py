@@ -58,21 +58,20 @@ t_ID = '[_a-z]+'
 
 t_COLON = ','
 t_SEMICOLON = ';'
-t_LEFTB = '\('
-t_RIGHTB = '\)'
+t_LEFTB = '\('  # noqa: W605
+t_RIGHTB = '\)'  # noqa: W605
 
 t_ignore = ' \t'
 
 
 def t_COMMENT(t):
-    '\[.*?\]'
+    '\[.*?\]'  # noqa: W605
     pass
 
 
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += t.value.count('\n')
-    print(t.lexer.lineno)
 
 
 def t_error(t):
