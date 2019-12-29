@@ -13,10 +13,15 @@ def main():
     with open(input_file, 'r') as f:
         input_data = f.read()
 
-    result = parser.parse(input_data, tracking=True)
+    try:
+        result = parser.parse(input_data, tracking=True)
+    except Exception as e:
+        print(e)
+        exit()
 
     with open(output_file, 'w') as f:
-        f.write(result)
+        # f.write(result)
+        print(result)
 
 
 if __name__ == '__main__':
