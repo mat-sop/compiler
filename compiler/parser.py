@@ -9,7 +9,7 @@ variables_manager = VariablesManager()
 
 def p_program_declarations_commands(p):
     '''program : DECLARE declarations BEGIN commands END'''
-    p[0] = variables_manager.variables
+    p[0] = 'test test test'
 
 
 def p_program_commands(p):
@@ -23,6 +23,7 @@ def p_declarations_declarations_id(p):
 
 def p_declarations_declarations_tab(p):
     '''declarations : declarations COMMA ID LEFTB NUM COLON NUM RIGHTB'''
+    variables_manager.add_array(p[3], int(p[5]), int(p[7]), p.lexer.lineno)
 
 
 def p_declarations_id(p):
@@ -32,6 +33,7 @@ def p_declarations_id(p):
 
 def p_declarations_tab(p):
     '''declarations : ID LEFTB NUM COLON NUM RIGHTB'''
+    variables_manager.add_array(p[1], int(p[3]), int(p[5]), p.lexer.lineno)
 
 
 def p_commands_commands_command(p):
