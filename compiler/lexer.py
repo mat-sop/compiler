@@ -53,7 +53,7 @@ t_DECLARE = 'DECLARE'
 t_BEGIN = 'BEGIN'
 t_END = 'END'
 
-t_NUM = '[0-9]+'
+t_NUM = '-?[0-9]+'
 t_ID = '[_a-z]+'
 
 t_COMMA = ','

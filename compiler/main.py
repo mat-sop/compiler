@@ -19,9 +19,10 @@ def main():
         print(e)
         exit()
 
-    with open(output_file, 'w') as f:
+    print(result)
+
+    # with open(output_file, 'w') as f:
         # f.write(result)
-        print(result)
 
 
 if __name__ == '__main__':

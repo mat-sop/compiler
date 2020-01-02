@@ -1,15 +1,15 @@
 import ply.yacc as yacc
 
 from lexer import tokens  # noqa: F401
-from variables import VariablesManager
+from memory import MemoryManager
+from generator import read
 
-
-variables_manager = VariablesManager()
+memory_manager = MemoryManager()
 
 
 def p_program_declarations_commands(p):
     '''program : DECLARE declarations BEGIN commands END'''
-    p[0] = 'test test test'
+    p[0] = p[4]
 
 
 def p_program_commands(p):
@@ -18,30 +18,33 @@ def p_program_commands(p):
 
 def p_declarations_declarations_id(p):
     '''declarations : declarations COMMA ID'''
-    variables_manager.add_variable(p[3], p.lexer.lineno)
+    memory_manager.add_variable(p[3], p.lexer.lineno)
 
 
 def p_declarations_declarations_tab(p):
     '''declarations : declarations COMMA ID LEFTB NUM COLON NUM RIGHTB'''
-    variables_manager.add_array(p[3], int(p[5]), int(p[7]), p.lexer.lineno)
+    memory_manager.add_array(p[3], int(p[5]), int(p[7]), p.lexer.lineno)
 
 
 def p_declarations_id(p):
     '''declarations : ID'''
-    variables_manager.add_variable(p[1], p.lexer.lineno)
+    memory_manager.add_variable(p[1], p.lexer.lineno)
 
 
 def p_declarations_tab(p):
     '''declarations : ID LEFTB NUM COLON NUM RIGHTB'''
-    variables_manager.add_array(p[1], int(p[3]), int(p[5]), p.lexer.lineno)
+    memory_manager.add_array(p[1], int(p[3]), int(p[5]), p.lexer.lineno)
 
 
 def p_commands_commands_command(p):
     '''commands : commands command'''
+    memory_manager.determine_indexes_in_memory()
 
 
 def p_commands_command(p):
     '''commands : command'''
+    memory_manager.determine_indexes_in_memory()
+    p[0] = p[1]
 
 
 def p_command_assign(p):
@@ -74,6 +77,7 @@ def p_command_for_from_downto_do(p):
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
+    print(read(p[2], memory_manager))
 
 
 def p_command_write(p):
@@ -138,6 +142,7 @@ def p_value_identifier(p):
 
 def p_identifier_id(p):
     '''identifier : ID'''
+    p[0] = p[1]
 
 
 def p_identifier_tab_id(p):
