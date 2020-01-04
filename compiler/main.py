@@ -20,9 +20,8 @@ def main():
         exit()
 
     print(result)
-
-    # with open(output_file, 'w') as f:
-        # f.write(result)
+    with open(output_file, 'w') as f:
+        f.write('\n'.join(result))
 
 
 if __name__ == '__main__':

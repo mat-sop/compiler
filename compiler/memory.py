@@ -22,7 +22,8 @@ class MemoryManager():
     def add_variable(self, name, lineno):
         if self.is_variable_declared(name):
             raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
-        self._variables.append(Variable(name))
+        self._variables.append(Variable(name, self._first_free_index))
+        self._first_free_index += 1
 
     def add_array(self, name, start, end, lineno):
         array = Array(name, start, end, lineno)
@@ -30,18 +31,9 @@ class MemoryManager():
             raise ArrayMultipleDeclaration(f'{lineno}: Array {name} is already defined')
         elif self.is_variable_declared(name):
             raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
+        array.index = self._first_free_index
+        self._first_free_index += array.length
         self._arrays.append(array)
-
-    def determine_indexes_in_memory(self):  # shoudl be called only once after DECLARE
-
-        if self._determine_called:
-            return
-        print('declare')
-        for v in self._variables + self._arrays:
-            v.index_in_memory = self._first_free_index
-            self._first_free_index += v.length
-
-        self._determine_called = True
 
     def get_variable(self, name):
         for v in self._variables:
@@ -51,9 +43,9 @@ class MemoryManager():
 
 class Variable():
 
-    def __init__(self, name):
+    def __init__(self, name, index):
         self.name = name
-        self.index_in_memory = None
+        self.index = index
         self.length = 1
 
     def __eq__(self, other):
@@ -74,7 +66,7 @@ class Array():
         self.name = name
         self.start = start
         self.end = end
-        self.index_in_memory = None
+        self.index = None
 
     def __eq__(self, other):
         return self.name == other.name
