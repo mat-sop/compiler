@@ -105,6 +105,7 @@ def p_command_write(p):
 
 def p_expression_value(p):
     '''expression : value'''
+    p[0] = p[1]
     # print('''expression : value''')
 
 
@@ -190,6 +191,7 @@ def p_identifier_tab_id(p):
 def p_identifier_tab_num(p):
     '''identifier : ID LEFTB NUM RIGHTB'''
     # print('''identifier : ID LEFTB NUM RIGHTB''')
+    p[0] = f'{p[1]}___{p[3]}'
 
 
 def p_error(p):

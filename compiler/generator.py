@@ -1,38 +1,38 @@
-def read(name, memory_manager):
-    var = memory_manager.get_variable(name)
+def read(identifier, memory_manager):
+    index = memory_manager.get_index(identifier)
     return [
         'GET',
-        f'STORE {var.index}'
+        f'STORE {index}'
     ]
 
 
-def write(name, memory_manager):
-    var = memory_manager.get_variable(name)
+def write(identifier, memory_manager):
+    index = memory_manager.get_index(identifier)
     return [
-        f'LOAD {var.index}',
+        f'LOAD {index}',
         'PUT'
     ]
 
 
-def assign(name, expression, memory_manager):
-    var = memory_manager.get_variable(name)
+def assign(identifier, expression, memory_manager):
+    index = memory_manager.get_index(identifier)
     return expression + [
-        f'STORE {var.index}'
+        f'STORE {index}'
     ]
 
 
-def plus(name1, name2, memory_manager):
-    var1 = memory_manager.get_variable(name1)
-    var2 = memory_manager.get_variable(name2)
+def plus(identifier1, identifier2, memory_manager):
+    index1 = memory_manager.get_index(identifier1)
+    index2 = memory_manager.get_index(identifier2)
     return [
-        f'LOAD {var1.index}',
-        F'ADD {var2.index}'
+        f'LOAD {index1}',
+        F'ADD {index2}'
     ]
 
-def minus(name1, name2, memory_manager):
-    var1 = memory_manager.get_variable(name1)
-    var2 = memory_manager.get_variable(name2)
+def minus(identifier1, identifier2, memory_manager):
+    index1 = memory_manager.get_index(identifier1)
+    index2 = memory_manager.get_index(identifier2)
     return [
-        f'LOAD {var1.index}',
-        F'SUB {var2.index}'
+        f'LOAD {index1}',
+        F'SUB {index2}'
     ]

@@ -1,6 +1,9 @@
 from exceptions import (ArrayMultipleDeclaration, ArrayWrongSizeDeclaration,
                         VariableMultipleDeclaration)
 
+import re
+from lexer import t_NUM
+
 
 class MemoryManager():
 
@@ -31,6 +34,7 @@ class MemoryManager():
             raise ArrayMultipleDeclaration(f'{lineno}: Array {name} is already defined')
         elif self.is_variable_declared(name):
             raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
+
         array.index = self._first_free_index
         self._first_free_index += array.length
         self._arrays.append(array)
@@ -39,6 +43,19 @@ class MemoryManager():
         for v in self._variables:
             if v.name == name:
                 return v
+
+    def get_array(self, name):
+        for a in self._arrays:
+            if a.name == name:
+                return a
+
+    def get_index(self, identifier):
+        if '___' not in identifier:  # single variable
+            return self.get_variable(identifier).index
+        else:  # array
+            name, a_index = identifier.split('___')
+            if re.compile(t_NUM).match(a_index):  # id(num)
+                return self.get_array(name).index + int(a_index)
 
 
 class Variable():
