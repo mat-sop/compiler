@@ -2,7 +2,8 @@ import ply.yacc as yacc
 
 from lexer import tokens  # noqa: F401
 from memory import MemoryManager
-from generator import read, write
+from generator import read, write, plus, assign, minus
+
 
 memory_manager = MemoryManager()
 
@@ -56,6 +57,7 @@ def p_commands_command(p):
 
 def p_command_assign(p):
     '''command : identifier ASSIGN expression SEMICOLON'''
+    p[0] = assign(p[1], p[3], memory_manager)
     # print('''command : identifier ASSIGN expression SEMICOLON''')
 
 
@@ -98,7 +100,6 @@ def p_command_read(p):
 def p_command_write(p):
     '''command : WRITE value SEMICOLON'''
     # print('''command : WRITE value SEMICOLON''')
-    print(p[2])
     p[0] = write(p[2], memory_manager)
 
 
@@ -109,11 +110,13 @@ def p_expression_value(p):
 
 def p_expression_plus(p):
     '''expression : value PLUS value'''
+    p[0] = plus(p[1], p[3], memory_manager)
     # print('''expression : value PLUS value''')
 
 
 def p_expression_minus(p):
     '''expression : value MINUS value'''
+    p[0] = minus(p[1], p[3], memory_manager)
     # print('''expression : value MINUS value''')
 
 

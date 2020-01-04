@@ -9,7 +9,7 @@ class MemoryManager():
         self._arrays = list()
         self._iterators = list()
 
-        self._first_free_index = 0
+        self._first_free_index = 1
 
         self._determine_called = False
 
