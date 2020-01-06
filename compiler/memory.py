@@ -2,7 +2,7 @@ from exceptions import (ArrayMultipleDeclaration, ArrayWrongSizeDeclaration,
                         VariableMultipleDeclaration)
 
 import re
-from lexer import t_NUM
+from lexer import t_NUM, SEPARATOR
 
 
 class MemoryManager():
@@ -50,10 +50,10 @@ class MemoryManager():
                 return a
 
     def get_index(self, identifier):
-        if '___' not in identifier:  # single variable
+        if SEPARATOR not in identifier:  # single variable
             return self.get_variable(identifier).index
         else:  # array
-            name, a_index = identifier.split('___')
+            name, a_index = identifier.split(SEPARATOR)
             if re.compile(t_NUM).match(a_index):  # id(num)
                 return self.get_array(name).index + int(a_index)
 

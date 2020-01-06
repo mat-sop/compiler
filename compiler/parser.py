@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 
-from lexer import tokens  # noqa: F401
+from lexer import tokens, SEPARATOR  # noqa: F401
 from memory import MemoryManager
 from generator import read, write, plus, assign, minus
 
@@ -185,13 +185,14 @@ def p_identifier_id(p):
 
 def p_identifier_tab_id(p):
     '''identifier : ID LEFTB ID RIGHTB'''
+    p[0] = f'{p[1]}{SEPARATOR}{p[3]}'
     # print('''identifier : ID LEFTB ID RIGHTB''')
 
 
 def p_identifier_tab_num(p):
     '''identifier : ID LEFTB NUM RIGHTB'''
     # print('''identifier : ID LEFTB NUM RIGHTB''')
-    p[0] = f'{p[1]}___{p[3]}'
+    p[0] = f'{p[1]}{SEPARATOR}{p[3]}'
 
 
 def p_error(p):
