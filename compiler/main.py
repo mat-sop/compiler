@@ -13,11 +13,7 @@ def main():
     with open(input_file, 'r') as f:
         input_data = f.read()
 
-    try:
-        result = parser.parse(input_data, tracking=True)
-    except Exception as e:
-        print(e)
-        exit()
+    result = parser.parse(input_data, tracking=True)
 
     print(result)
     with open(output_file, 'w') as f:
