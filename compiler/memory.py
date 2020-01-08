@@ -52,16 +52,15 @@ class MemoryManager():
     def get_index(self, identifier):
         additional_commands = []
         if SEPARATOR not in identifier:  # single variable
-            return additional_commands, self.get_variable(identifier).index
+            return self.get_variable(identifier).index, additional_commands,
 
         else:  # array
             name, a_index = identifier.split(SEPARATOR)
             if re.compile(t_NUM).match(a_index):  # id(num)
-                return additional_commands, self.get_array(name).index + int(a_index)
+                return self.get_array(name).index + int(a_index), additional_commands
 
             else:
-                return additional_commands,
-                '1'
+                return '1', additional_commands
 
 class Variable():
 

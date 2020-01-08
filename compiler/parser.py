@@ -1,9 +1,8 @@
 import ply.yacc as yacc
 
-from lexer import tokens, SEPARATOR  # noqa: F401
+from generator import assign, con_eq, if_then, minus, plus, read, write
+from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
-from generator import read, write, plus, assign, minus, con_eq
-
 
 memory_manager = MemoryManager()
 
@@ -68,7 +67,7 @@ def p_command_if_then_else(p):
 
 def p_command_if_then(p):
     '''command : IF condition THEN commands ENDIF'''
-    p[0] = [p[2]] + p[4]
+    p[0] = if_then(p[2], p[4])
     # print('''command : IF condition THEN commands ENDIF''')
 
 
@@ -139,10 +138,8 @@ def p_expression_mod(p):
 
 def p_condition_eq(p):
     '''condition : value EQ value'''
-    # p[0] = con_eq(p[1], p[3], memory_manager)
+    p[0] = con_eq(p[1], p[3], memory_manager)
     # print('''condition : value EQ value''')
-    p[0] = 'EQ'
-
 
 def p_condition_neq(p):
     '''condition : value NEQ value'''

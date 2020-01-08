@@ -1,6 +1,8 @@
 import sys
 from parser import parser
 
+from process import determine_jumps
+
 
 def main():
     try:
@@ -14,6 +16,7 @@ def main():
         input_data = f.read()
 
     result = parser.parse(input_data, tracking=True)
+    result = determine_jumps(result)
 
     print(result)
     with open(output_file, 'w') as f:
