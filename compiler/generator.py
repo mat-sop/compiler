@@ -56,6 +56,19 @@ def con_eq(identifier1, identifier2, memory_manager):
     ]
 
 
+def con_neq(identifier1, identifier2, memory_manager):
+    index1, commands1 = memory_manager.get_index(identifier1)
+    index2, commands2 = memory_manager.get_index(identifier2)
+    return commands1 + commands2 + [
+        f'LOAD {index1}',
+        f'SUB {index2}',
+        f'JZERO k_{len(set_true)+2}',
+        *set_true,
+        f'JUMP k_{len(set_false)+1}',
+        *set_false
+    ]
+
+
 def if_then(condition, commands):
     return condition + [
         f'JZERO k_{len(commands)+1}'
