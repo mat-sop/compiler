@@ -1,7 +1,7 @@
 import ply.yacc as yacc
 
-from generator import (assign, con_eq, con_ge, con_le, con_neq, if_then, minus,
-                       plus, read, write)
+from generator import (assign, con_eq, con_ge, con_geq, con_le, con_leq,
+                       con_neq, if_then, minus, plus, read, write)
 from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
 
@@ -163,11 +163,13 @@ def p_condition_ge(p):
 
 def p_condition_leq(p):
     '''condition : value LEQ value'''
+    p[0] = con_leq(p[1], p[3], memory_manager)
     # print('''condition : value LEQ value''')
 
 
 def p_condition_geq(p):
     '''condition : value GEQ value'''
+    p[0] = con_geq(p[1], p[3], memory_manager)
     # print('''condition : value GEQ value''')
 
 
