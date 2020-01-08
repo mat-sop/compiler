@@ -1,7 +1,8 @@
 import ply.yacc as yacc
 
 from generator import (assign, con_eq, con_ge, con_geq, con_le, con_leq,
-                       con_neq, if_then, minus, plus, read, write)
+                       con_neq, if_then, if_then_else, minus, plus, read,
+                       write)
 from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
 
@@ -63,6 +64,7 @@ def p_command_assign(p):
 
 def p_command_if_then_else(p):
     '''command : IF condition THEN commands ELSE commands ENDIF'''
+    p[0] = if_then_else(p[2], p[4], p[6])
     # print('''command : IF condition THEN commands ELSE commands ENDIF''')
 
 
