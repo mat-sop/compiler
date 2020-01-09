@@ -1,8 +1,11 @@
 import ply.yacc as yacc
 
-from generator import (assign, con_eq, con_ge, con_geq, con_le, con_leq,
-                       con_neq, if_then, if_then_else, minus, plus, read,
-                       write)
+from generator.assign import assign
+from generator.condition import (con_eq, con_ge, con_geq, con_le, con_leq,
+                                 con_neq)
+from generator.conditional import if_then, if_then_else
+from generator.expression import minus, plus
+from generator.io import read, write
 from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
 

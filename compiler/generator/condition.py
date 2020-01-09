@@ -1,44 +1,3 @@
-def read(identifier, memory_manager):
-    index, commands = memory_manager.get_index(identifier)
-    return commands + [
-        'GET',
-        f'STORE {index}'
-    ]
-
-
-def write(identifier, memory_manager):
-    index, commands = memory_manager.get_index(identifier)
-    return commands + [
-        f'LOAD {index}',
-        'PUT'
-    ]
-
-
-def assign(identifier, expression, memory_manager):
-    index, commands = memory_manager.get_index(identifier)
-    return expression + commands + [
-        f'STORE {index}'
-    ]
-
-
-def plus(identifier1, identifier2, memory_manager):
-    index1, commands1 = memory_manager.get_index(identifier1)
-    index2, commands2 = memory_manager.get_index(identifier2)
-    return commands1 + commands2 + [
-        f'LOAD {index1}',
-        f'ADD {index2}'
-    ]
-
-
-def minus(identifier1, identifier2, memory_manager):
-    index1, commands1 = memory_manager.get_index(identifier1)
-    index2, commands2 = memory_manager.get_index(identifier2)
-    return commands1 + commands2 + [
-        f'LOAD {index1}',
-        f'SUB {index2}'
-    ]
-
-
 set_true = ['SUB 0', 'INC']
 set_false = ['SUB 0']
 
@@ -118,19 +77,4 @@ def con_geq(identifier1, identifier2, memory_manager):
         *set_true,
         f'JUMP k_{len(set_false)+1}',
         *set_false
-    ]
-
-
-def if_then(condition, commands):
-    return condition + [
-        f'JZERO k_{len(commands)+1}'
-    ] + commands
-
-
-def if_then_else(condition, then_commands, else_commands):
-    return condition + [
-        f'JZERO k_{len(then_commands)+2}',
-        *then_commands,
-        f'JUMP k_{len(else_commands)+1}',
-        *else_commands
     ]
