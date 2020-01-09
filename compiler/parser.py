@@ -19,7 +19,7 @@ def p_program_declarations_commands(p):
 
 def p_program_commands(p):
     '''program : BEGIN commands END'''
-    p[0] = p[2]
+    p[0] = p[2] + ['HALT']
 
 
 def p_declarations_declarations_id(p):
@@ -152,6 +152,8 @@ def p_condition_geq(p):
 
 def p_value_num(p):
     '''value : NUM'''
+    memory_manager.add_constant(p[1])
+    p[0] = f'const_{p[1]}'
 
 
 def p_value_identifier(p):

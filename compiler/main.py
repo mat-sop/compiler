@@ -1,7 +1,7 @@
 import sys
-from parser import parser
+from parser import parser, memory_manager
 
-from process import determine_jumps
+from process import process
 
 
 def main():
@@ -16,9 +16,9 @@ def main():
         input_data = f.read()
 
     result = parser.parse(input_data, tracking=True)
-    result = determine_jumps(result)
+    result = process(result, memory_manager)
 
-    print(result)
+    # print(result)
     with open(output_file, 'w') as f:
         f.write('\n'.join(result))
 

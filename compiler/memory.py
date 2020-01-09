@@ -11,8 +11,9 @@ class MemoryManager():
         self._variables = list()
         self._arrays = list()
         self._iterators = list()
+        self.constants = set()
 
-        self._first_free_index = 1
+        self._first_free_index = 6
 
         self._determine_called = False
 
@@ -39,6 +40,9 @@ class MemoryManager():
         self._first_free_index += array.length
         self._arrays.append(array)
 
+    def add_constant(self, n):
+        self.constants.add(int(n))
+
     def get_variable(self, name):
         for v in self._variables:
             if v.name == name:
@@ -50,6 +54,8 @@ class MemoryManager():
                 return a
 
     def get_index(self, identifier):
+        if 'const_' in identifier:
+            return identifier, []
         additional_commands = []
         if SEPARATOR not in identifier:  # single variable
             return self.get_variable(identifier).index, additional_commands,
@@ -61,6 +67,11 @@ class MemoryManager():
 
             else:
                 return '1', additional_commands
+
+    def get_free_index(self):
+        i = self._first_free_index
+        self._first_free_index += 1
+        return i
 
 class Variable():
 
