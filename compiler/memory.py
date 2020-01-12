@@ -13,7 +13,7 @@ class MemoryManager():
         self._iterators = list()
         self.constants = set()
 
-        self._first_free_index = 6
+        self._first_free_index = 8
 
         self._determine_called = False
 
@@ -63,7 +63,7 @@ class MemoryManager():
         else:  # array
             name, a_index = identifier.split(SEPARATOR)
             if re.compile(t_NUM).match(a_index):  # id(num)
-                return self.get_array(name).index + int(a_index), additional_commands
+                return self.get_array(name).get_index(int(a_index)), additional_commands
 
             else:
                 return '1', additional_commands
@@ -72,6 +72,7 @@ class MemoryManager():
         i = self._first_free_index
         self._first_free_index += 1
         return i
+
 
 class Variable():
 
@@ -115,3 +116,9 @@ class Array():
     @property
     def length(self):
         return self.end - self.start + 1
+
+    def get_index(self, i):
+        if i > 0:
+            return self.index + i
+        else:
+            return self.index - i

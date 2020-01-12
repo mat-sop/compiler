@@ -2,8 +2,8 @@ from generator.const import gen_const
 
 
 def process(commands, memory_manager):
-    commands = determine_jumps(commands)
     commands = resolve_constances(commands, memory_manager)
+    commands = determine_jumps(commands)
     return commands
 
 
@@ -21,7 +21,6 @@ def resolve_constances(commands, memory_manager):
     constants = {}
     for n in memory_manager.constants:
         i = memory_manager.get_free_index()
-        generated += [f'# {n}']
         generated += gen_const(n, i)
         constants[n] = i
 

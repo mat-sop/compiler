@@ -4,8 +4,9 @@ from generator.assign import assign
 from generator.condition import (con_eq, con_ge, con_geq, con_le, con_leq,
                                  con_neq)
 from generator.conditional import if_then, if_then_else
-from generator.expression import minus, plus
+from generator.expression import minus, plus, value, times
 from generator.io import read, write
+from generator.loop import while_do, do_while
 from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
 
@@ -54,7 +55,8 @@ def p_commands_command(p):
 
 def p_command_assign(p):
     '''command : identifier ASSIGN expression SEMICOLON'''
-    p[0] = assign(p[1], p[3], memory_manager)
+    index, commands = memory_manager.get_index(p[1])
+    p[0] = commands + p[3] + assign(index)
 
 
 def p_command_if_then_else(p):
@@ -69,10 +71,12 @@ def p_command_if_then(p):
 
 def p_command_while_do(p):
     '''command : WHILE condition DO commands ENDWHILE'''
+    p[0] = while_do(p[2], p[4])
 
 
 def p_command_do_while(p):
     '''command : DO commands WHILE condition ENDDO'''
+    p[0] = do_while(p[4], p[2])
 
 
 def p_command_for_from_to_do(p):
@@ -85,31 +89,41 @@ def p_command_for_from_downto_do(p):
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
-    p[0] = read(p[2], memory_manager)
+    index, commands = memory_manager.get_index(p[2])
+    p[0] = commands + read(index)
 
 
 def p_command_write(p):
     '''command : WRITE value SEMICOLON'''
-    p[0] = write(p[2], memory_manager)
+    index, commands = memory_manager.get_index(p[2])
+    p[0] = commands + write(index)
 
 
 def p_expression_value(p):
     '''expression : value'''
-    p[0] = p[1]
+    index, commands = memory_manager.get_index(p[1])
+    p[0] = commands + value(index)
 
 
 def p_expression_plus(p):
     '''expression : value PLUS value'''
-    p[0] = plus(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + plus(index1, index2)
 
 
 def p_expression_minus(p):
     '''expression : value MINUS value'''
-    p[0] = minus(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + minus(index1, index2)
 
 
 def p_expression_times(p):
     '''expression : value TIMES value'''
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + times(index1, index2)
 
 
 def p_expression_div(p):
@@ -122,32 +136,44 @@ def p_expression_mod(p):
 
 def p_condition_eq(p):
     '''condition : value EQ value'''
-    p[0] = con_eq(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_eq(index1, index2)
 
 
 def p_condition_neq(p):
     '''condition : value NEQ value'''
-    p[0] = con_neq(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_neq(index1, index2)
 
 
 def p_condition_le(p):
     '''condition : value LE value'''
-    p[0] = con_le(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_le(index1, index2)
 
 
 def p_condition_ge(p):
     '''condition : value GE value'''
-    p[0] = con_ge(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_ge(index1, index2)
 
 
 def p_condition_leq(p):
     '''condition : value LEQ value'''
-    p[0] = con_leq(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_leq(index1, index2)
 
 
 def p_condition_geq(p):
     '''condition : value GEQ value'''
-    p[0] = con_geq(p[1], p[3], memory_manager)
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + con_geq(index1, index2)
 
 
 def p_value_num(p):

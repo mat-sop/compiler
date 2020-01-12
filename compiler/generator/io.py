@@ -1,14 +1,12 @@
-def read(identifier, memory_manager):
-    index, commands = memory_manager.get_index(identifier)
-    return commands + [
+def read(index):
+    return [
         'GET',
         f'STORE {index}'
     ]
 
 
-def write(identifier, memory_manager):
-    index, commands = memory_manager.get_index(identifier)
-    return commands + [
+def write(index):
+    return [
         f'LOAD {index}',
         'PUT'
     ]
