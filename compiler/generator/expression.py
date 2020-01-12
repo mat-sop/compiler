@@ -64,7 +64,7 @@ def times(index1, index2):
     ]
     con_loop_1 = con_ge(left, factor)  # left > factor
     loop_1 = [  # factor *= 2, factor_pow += 1
-        f'LOAD {factor} # LOOP 1',
+        f'LOAD {factor}',
         f'SHIFT {shift}',
         f'STORE {factor}',
         f'LOAD {factor_pow}',
@@ -73,7 +73,7 @@ def times(index1, index2):
     ]
     con_loop_3 = con_ge(factor, left)  # factor > left
     loop_3 = [  # factor /= 2, factor_pow -= 1
-        f'LOAD {factor} # LOOP 3',
+        f'LOAD {factor}',
         f'SHIFT {shift}',
         f'STORE {factor}',
         f'LOAD {factor_pow}',
@@ -84,7 +84,7 @@ def times(index1, index2):
     loop_2 = [
         *while_do(con_loop_3, loop_3),
 
-        f'LOAD {a} # LOOP 2',  # result += factor * a
+        f'LOAD {a}',  # result += factor * a
         f'SHIFT {factor_pow}',
         f'STORE {tmp}',
         f'LOAD {result}',

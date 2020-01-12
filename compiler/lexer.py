@@ -68,7 +68,7 @@ t_ignore = ' \t'
 
 
 def t_COMMENT(t):
-    '\[.*?\]'  # noqa: W605
+    '(?s)\[.*?\]'  # noqa: W605
     pass
 
 
