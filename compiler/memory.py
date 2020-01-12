@@ -13,7 +13,7 @@ class MemoryManager():
         self._iterators = list()
         self.constants = set()
 
-        self._first_free_index = 8
+        self._first_free_index = 11
 
         self._determine_called = False
 

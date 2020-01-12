@@ -71,12 +71,7 @@ def times(index1, index2):
         'INC',
         f'STORE {factor_pow}'
     ]
-    con_loop_3 = [  # (factor - 1) > left
-        f'LOAD {factor}',
-        'DEC',
-        f'STORE {tmp}',
-        *con_ge(tmp, left)
-    ]
+    con_loop_3 = con_ge(factor, left)  # factor > left
     loop_3 = [  # factor /= 2, factor_pow -= 1
         f'LOAD {factor} # LOOP 3',
         f'SHIFT {shift}',
@@ -86,7 +81,7 @@ def times(index1, index2):
         f'STORE {factor_pow}',
     ]
     con_loop_2 = con_ge(left, zero)
-    loop_2 =[
+    loop_2 = [
         *while_do(con_loop_3, loop_3),
 
         f'LOAD {a} # LOOP 2',  # result += factor * a
@@ -100,6 +95,14 @@ def times(index1, index2):
 
         f'STORE {left}'
     ]
+    fix_sign = [
+        f'LOAD {b}',
+        'JPOS k_5',
+        f'LOAD {result}',
+        f'SUB 0',
+        f'SUB {result}',
+        f'STORE {result}'
+    ]
 
     return [
         *initialize,
@@ -111,6 +114,8 @@ def times(index1, index2):
         f'STORE {shift}',  # shift = -1
 
         *while_do(con_loop_2, loop_2),
+
+        *fix_sign,
 
         f'LOAD {result}'
     ]
