@@ -37,6 +37,7 @@ class MemoryManager():
             raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
 
         array.index = self._first_free_index
+        self.add_constant(array.index)
         self._first_free_index += array.length
         self._arrays.append(array)
 
@@ -60,13 +61,32 @@ class MemoryManager():
         if SEPARATOR not in identifier:  # single variable
             return self.get_variable(identifier).index, additional_commands,
 
-        else:  # array
-            name, a_index = identifier.split(SEPARATOR)
-            if re.compile(t_NUM).match(a_index):  # id(num)
-                return self.get_array(name).get_index(int(a_index)), additional_commands
+        else:  # name(const)
+            array_name, array_index = identifier.split(SEPARATOR)
+            if re.compile(t_NUM).match(array_index):  # id(num)
+                return self.get_array(array_name).get_index(int(array_index)), additional_commands
 
-            else:
-                return '1', additional_commands
+            else:   # name(identifier)
+                name, identifier = identifier.split(SEPARATOR)
+                id_index, additional_commands = self.get_index(identifier)
+                array = self.get_array(name)
+                new_index = self._first_free_index
+                self._first_free_index += 1
+
+                additional_commands += [
+                    f'LOAD {id_index}',
+                    f'JNEG k_4',
+                    f'LOAD const_{array.index}',
+                    f'ADD {id_index}',
+                    f'JUMP k_3',
+                    f'LOAD const_{array.index}',
+                    f'SUB {id_index}',
+
+                    f'STORE {new_index}',
+                    f'LOADI {new_index}',
+                    f'STORE {new_index}'
+                ]
+                return new_index, additional_commands
 
     def get_free_index(self):
         i = self._first_free_index
