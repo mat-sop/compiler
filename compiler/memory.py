@@ -10,7 +10,7 @@ class MemoryManager():
     def __init__(self):
         self._variables = list()
         self._arrays = list()
-        self._iterators = list()
+        self.iterators = list()
         self.constants = set()
 
         self._first_free_index = 11
@@ -44,8 +44,17 @@ class MemoryManager():
     def add_constant(self, n):
         self.constants.add(int(n))
 
+    def add_iterator(self, name):
+        v = Variable(name, self._first_free_index)
+        self.iterators.append(v)
+        self._first_free_index += 1
+        return v.index
+
+    def remove_iterator(self, name):
+        self.iterators.remove(Variable(name, 0))
+
     def get_variable(self, name):
-        for v in self._variables:
+        for v in self._variables + self.iterators:
             if v.name == name:
                 return v
 
@@ -59,7 +68,10 @@ class MemoryManager():
             return identifier, []
         additional_commands = []
         if SEPARATOR not in identifier:  # single variable
-            return self.get_variable(identifier).index, additional_commands,
+            v = self.get_variable(identifier)
+            if v is None:
+                return 
+            return v.index, additional_commands,
 
         else:  # name(const)
             array_name, array_index = identifier.split(SEPARATOR)
