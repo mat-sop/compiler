@@ -44,17 +44,8 @@ class MemoryManager():
     def add_constant(self, n):
         self.constants.add(int(n))
 
-    def add_iterator(self, name):
-        v = Variable(name, self._first_free_index)
-        self.iterators.append(v)
-        self._first_free_index += 1
-        return v.index
-
-    def remove_iterator(self, name):
-        self.iterators.remove(Variable(name, 0))
-
     def get_variable(self, name):
-        for v in self._variables + self.iterators:
+        for v in self._variables:
             if v.name == name:
                 return v
 
@@ -70,7 +61,7 @@ class MemoryManager():
         if SEPARATOR not in identifier:  # single variable
             v = self.get_variable(identifier)
             if v is None:
-                return 
+                return f'iter_{identifier}', additional_commands
             return v.index, additional_commands,
 
         else:  # name(const)

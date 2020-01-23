@@ -4,6 +4,7 @@ from generator.const import gen_const
 def process(commands, memory_manager):
     commands = resolve_constances(commands, memory_manager)
     commands = determine_jumps(commands)
+    commands = resolve_iterators(commands, memory_manager)
     return commands
 
 
@@ -30,3 +31,16 @@ def resolve_constances(commands, memory_manager):
             c = commands[i].split(' ')[0]
             commands[i] = f'{c} {constants[n]}'
     return generated + commands
+
+
+def resolve_iterators(commands, memory_manager):
+    indexes = {}
+    for i in range(len(commands)):
+        if 'iter_' in commands[i]:
+            iterator = commands[i].split('_')[-1]
+            if iterator not in indexes:
+                indexes[iterator] = memory_manager.get_free_index()
+            index = indexes[iterator]
+            c = commands[i].split(' ')[0]
+            commands[i] = f'{c} {index}'
+    return commands

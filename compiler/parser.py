@@ -6,7 +6,7 @@ from generator.condition import (con_eq, con_ge, con_geq, con_le, con_leq,
 from generator.conditional import if_then, if_then_else
 from generator.expression import minus, plus, value, times
 from generator.io import read, write
-from generator.loop import while_do, do_while, for_from
+from generator.loop import while_do, do_while, for_to, for_downto
 from lexer import SEPARATOR, tokens  # noqa: F401
 from memory import MemoryManager
 
@@ -81,15 +81,18 @@ def p_command_do_while(p):
 
 def p_command_for_from_to_do(p):
     '''command : FOR ID FROM value TO value DO commands ENDFOR'''
-    print('fooooor')
-    iterator_index = memory_manager.add_iterator(p[2])
     start_index, commands1 = memory_manager.get_index(p[4])
     end_index, commands2 = memory_manager.get_index(p[6])
-    p[0] = commands1 + commands2 + for_from(iterator_index, start_index, end_index, p[8])
+    free_index = memory_manager.get_free_index()
+    p[0] = commands1 + commands2 + for_to(f'iter_{p[2]}', start_index, end_index, p[8], free_index)
+
 
 def p_command_for_from_downto_do(p):
     '''command : FOR ID FROM value DOWNTO value DO commands ENDFOR'''
-
+    start_index, commands1 = memory_manager.get_index(p[4])
+    end_index, commands2 = memory_manager.get_index(p[6])
+    free_index = memory_manager.get_free_index()
+    p[0] = commands1 + commands2 + for_downto(f'iter_{p[2]}', start_index, end_index, p[8], free_index)
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
@@ -99,7 +102,6 @@ def p_command_read(p):
 
 def p_command_write(p):
     '''command : WRITE value SEMICOLON'''
-    print('writttte')
     index, commands = memory_manager.get_index(p[2])
     p[0] = commands + write(index)
 

@@ -15,17 +15,37 @@ def do_while(condition, expression):
     ]
 
 
-def for_from(iterator, start, end, expression):
+def for_to(iterator, start, end, expression, free_index):
     return [
         f'LOAD {start}',
         f'STORE {iterator}',
-
         f'LOAD {end}',
+        f'STORE {free_index}',
+
+        f'LOAD {free_index}',
         f'SUB {iterator}',
         f'JNEG k_{len(expression)+5}',
         *expression,
         f'LOAD {iterator}',
         'INC',
         f'STORE {iterator}',
-        f'JUMP k_{-len(expression)-3-1}',
+        f'JUMP k_{-len(expression)-6}',
+    ]
+
+
+def for_downto(iterator, start, end, expression, free_index):
+    return [
+        f'LOAD {start}',
+        f'STORE {iterator}',
+        f'LOAD {end}',
+        f'STORE {free_index}',
+
+        f'LOAD {iterator}',
+        f'SUB {free_index}',
+        f'JNEG k_{len(expression)+5}',
+        *expression,
+        f'LOAD {iterator}',
+        'DEC',
+        f'STORE {iterator}',
+        f'JUMP k_{-len(expression)-6}'
     ]
