@@ -4,7 +4,7 @@ from generator.assign import assign
 from generator.condition import (con_eq, con_ge, con_geq, con_le, con_leq,
                                  con_neq)
 from generator.conditional import if_then, if_then_else
-from generator.expression import minus, plus, value, times
+from generator.expression import minus, plus, value, times, div
 from generator.io import read, write
 from generator.loop import while_do, do_while, for_to, for_downto
 from lexer import SEPARATOR, tokens  # noqa: F401
@@ -135,7 +135,9 @@ def p_expression_times(p):
 
 def p_expression_div(p):
     '''expression : value DIV value'''
-
+    index1, commands1 = memory_manager.get_index(p[1])
+    index2, commands2 = memory_manager.get_index(p[3])
+    p[0] = commands1 + commands2 + div(index1, index2)
 
 def p_expression_mod(p):
     '''expression : value MOD value'''

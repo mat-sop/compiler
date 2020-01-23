@@ -1,4 +1,4 @@
-from .condition import con_ge
+from .condition import con_ge, con_geq
 from .loop import while_do
 
 
@@ -51,6 +51,7 @@ def times(index1, index2):
         'SUB 0',
         f'STORE {result}',  # result = 0
         f'STORE {zero}',
+        f'STORE {factor_pow}',
 
         'INC',
         f'STORE {factor}',  # factor = 1
@@ -118,4 +119,39 @@ def times(index1, index2):
         *fix_sign,
 
         f'LOAD {result}'
+    ]
+
+
+def div(index1, index2):
+    """
+    def divide(a, b):
+        q = 0
+        while a >= b:
+            a -= b
+            q += 1
+        return (q, a)
+    """
+    a = 2
+    b = index2
+    q = 3
+
+    initialize = [
+        f'LOAD {index1}',
+        f'STORE {a}',
+        'SUB 0',
+        f'STORE {q}'
+    ]
+    condition = con_geq(a, b)
+    loop = [
+        f'LOAD {a}',
+        f'SUB {b}',
+        f'STORE {a}',
+        f'LOAD {q}',
+        'INC',
+        f'STORE {q}'
+    ]
+    return [
+        *initialize,
+        *while_do(condition, loop),
+        f'LOAD {q}'
     ]
