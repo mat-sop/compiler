@@ -150,8 +150,41 @@ def div(index1, index2):
         'INC',
         f'STORE {q}'
     ]
-    return [
+    division = [
         *initialize,
         *while_do(condition, loop),
         f'LOAD {q}'
     ]
+    return [
+        f'LOAD {index2}',
+        f'JZERO k_{len(division)+1}',
+        *division,
+    ]
+
+
+def mod(index1, index2):
+    a = 2
+    b = index2
+    q = 3
+
+    initialize = [
+        f'LOAD {index1}',
+        f'STORE {a}',
+        'SUB 0',
+        f'STORE {q}'
+    ]
+    condition = con_geq(a, b)
+    loop = [
+        f'LOAD {a}',
+        f'SUB {b}',
+        f'STORE {a}',
+        f'LOAD {q}',
+        'INC',
+        f'STORE {q}'
+    ]
+    mod = [
+        *initialize,
+        *while_do(condition, loop),
+        f'LOAD {a}'
+    ]
+    return mod
