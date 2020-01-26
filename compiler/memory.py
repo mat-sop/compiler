@@ -1,99 +1,84 @@
-from exceptions import (ArrayMultipleDeclaration, ArrayWrongSizeDeclaration,
-                        VariableMultipleDeclaration)
-
-import re
-from lexer import t_NUM, SEPARATOR
+from config import (CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX,
+                     STATIC_PREFIX)
 
 
 class MemoryManager():
 
     def __init__(self):
-        self._variables = list()
-        self._arrays = list()
+        self.variables = list()
+        self.arrays = list()
         self.iterators = list()
         self.constants = set()
 
-        self._first_free_index = 20
-
-        self._determine_called = False
-
-    def is_variable_declared(self, name):
-        return name in [v.name for v in self._variables]
-
-    def is_array_declared(self, name):
-        return name in [a.name for a in self._arrays]
+        self.first_free_index = 20
 
     def add_variable(self, name, lineno):
-        if self.is_variable_declared(name):
-            raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
-        self._variables.append(Variable(name, self._first_free_index))
-        self._first_free_index += 1
+        self.variables.append(Variable(name, self.first_free_index))
+        self.first_free_index += 1
 
     def add_array(self, name, start, end, lineno):
         array = Array(name, start, end, lineno)
-        if self.is_array_declared(name):
-            raise ArrayMultipleDeclaration(f'{lineno}: Array {name} is already defined')
-        elif self.is_variable_declared(name):
-            raise VariableMultipleDeclaration(f'{lineno}: Variable {name} is already defined')
-
-        array.index = self._first_free_index
+        array.index = self.first_free_index
         self.add_constant(array.index)
-        self._first_free_index += array.length
-        self._arrays.append(array)
+        self.first_free_index += array.length
+        self.arrays.append(array)
 
     def add_constant(self, n):
         self.constants.add(int(n))
 
     def get_variable(self, name):
-        for v in self._variables:
+        for v in self.variables:
             if v.name == name:
                 return v
 
     def get_array(self, name):
-        for a in self._arrays:
+        for a in self.arrays:
             if a.name == name:
                 return a
 
-    def get_index(self, identifier):
-        if 'const_' in identifier:
+    def get_index(self, identifier, dynamic_assign=False):
+        if CONST_PREFIX in identifier:  # NUM
             return identifier, []
-        additional_commands = []
-        if SEPARATOR not in identifier:  # single variable
-            v = self.get_variable(identifier)
-            if v is None:
-                return f'iter_{identifier}', additional_commands
-            return v.index, additional_commands,
 
-        else:  # name(const)
-            array_name, array_index = identifier.split(SEPARATOR)
-            if re.compile(t_NUM).match(array_index):  # id(num)
-                return self.get_array(array_name).get_index(int(array_index)), additional_commands
+        elif STATIC_PREFIX in identifier:  # name(const)
+            array_name, array_index = identifier.split(STATIC_PREFIX)
+            return self.get_array(array_name).get_index(int(array_index)), []
 
-            else:   # name(identifier)
-                name, identifier = identifier.split(SEPARATOR)
-                id_index, additional_commands = self.get_index(identifier)
-                array = self.get_array(name)
-                new_index = self._first_free_index
-                self._first_free_index += 1
+        elif DYNAMIC_PREFIX in identifier:  # name(identifier)
+            name, identifier = identifier.split(DYNAMIC_PREFIX)
+            id_index, additional_commands = self.get_index(identifier)
+            array = self.get_array(name)
+            new_index = self.first_free_index
+            self.first_free_index += 1
 
+            additional_commands += [
+                f'LOAD {id_index}',
+                f'JNEG k_4',
+                f'LOAD {CONST_PREFIX}{array.index}',
+                f'ADD {id_index}',
+                f'JUMP k_3',
+                f'LOAD {CONST_PREFIX}{array.index}',
+                f'SUB {id_index}',
+
+                f'STORE {new_index}'
+            ]
+
+            if not dynamic_assign:
                 additional_commands += [
-                    f'LOAD {id_index}',
-                    f'JNEG k_4',
-                    f'LOAD const_{array.index}',
-                    f'ADD {id_index}',
-                    f'JUMP k_3',
-                    f'LOAD const_{array.index}',
-                    f'SUB {id_index}',
-
-                    f'STORE {new_index}',
                     f'LOADI {new_index}',
                     f'STORE {new_index}'
                 ]
-                return new_index, additional_commands
+            return new_index, additional_commands
+
+        else:  # single variable
+            v = self.get_variable(identifier)
+            if v is None:  # probably iterator
+                return f'{ITERATOR_PREFIX}{identifier}', []
+            return v.index, []
 
     def get_free_index(self):
-        i = self._first_free_index
-        self._first_free_index += 1
+        i = self.first_free_index
+        self.first_free_index += 1
         return i
 
 
@@ -118,7 +103,8 @@ class Array():
 
     def __init__(self, name, start, end, lineno):
         if not self._is_start_before_end(start, end):
-            raise ArrayWrongSizeDeclaration(f'{lineno}: Starting index of array must be bigger than ending.')
+            raise ArrayWrongSizeDeclaration(
+                f'{lineno}: Starting index of array must be bigger than ending.')
         self.name = name
         self.start = start
         self.end = end

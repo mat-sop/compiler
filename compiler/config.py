@@ -1,0 +1,4 @@
+CONST_PREFIX = 'const_'
+STATIC_PREFIX = '_NUM_'
+DYNAMIC_PREFIX = '_ID_'
+ITERATOR_PREFIX = 'iter_'

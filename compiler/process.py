@@ -1,3 +1,4 @@
+from config import CONST_PREFIX, ITERATOR_PREFIX
 from generator.const import gen_const
 
 
@@ -26,7 +27,7 @@ def resolve_constances(commands, memory_manager):
         constants[n] = i
 
     for i in range(len(commands)):
-        if 'const_' in commands[i]:
+        if CONST_PREFIX in commands[i]:
             n = int(commands[i].split('_')[-1])
             c = commands[i].split(' ')[0]
             commands[i] = f'{c} {constants[n]}'
@@ -36,7 +37,7 @@ def resolve_constances(commands, memory_manager):
 def resolve_iterators(commands, memory_manager):
     indexes = {}
     for i in range(len(commands)):
-        if 'iter_' in commands[i]:
+        if ITERATOR_PREFIX in commands[i]:
             iterator = commands[i].split('_')[-1]
             if iterator not in indexes:
                 indexes[iterator] = memory_manager.get_free_index()

@@ -1,8 +1,6 @@
 import ply.lex as lex
 
 
-SEPARATOR = '___'
-
 tokens = (
     'SEMICOLON', 'COLON', 'COMMA', 'LEFTB', 'RIGHTB',
 

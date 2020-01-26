@@ -1,7 +1,7 @@
-def read(index):
+def read(index, relative_index=False):
     return [
         'GET',
-        f'STORE {index}'
+        f'STORE {index}' if not relative_index else f'STOREI {index}'
     ]
 
 

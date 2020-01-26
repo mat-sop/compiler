@@ -1,4 +1,4 @@
-def assign(index):
+def assign(index, relative_index=False):
     return [
-        f'STORE {index}'
+        f'STORE {index}' if not relative_index else f'STOREI {index}'
     ]
