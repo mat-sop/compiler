@@ -1,5 +1,4 @@
-from config import (CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX,
-                     STATIC_PREFIX)
+from config import CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX, STATIC_PREFIX
 
 
 class MemoryManager():
