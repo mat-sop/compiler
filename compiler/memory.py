@@ -1,3 +1,5 @@
+from exceptions import ArrayWrongSizeDeclaration
+
 from config import CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX, STATIC_PREFIX
 
 
@@ -17,8 +19,7 @@ class MemoryManager():
 
     def add_array(self, name, start, end, lineno):
         array = Array(name, start, end, lineno)
-        array.index = self.first_free_index
-        self.add_constant(array.index)
+        array.set_starting_index(self.first_free_index)
         self.first_free_index += array.length
         self.arrays.append(array)
 
@@ -47,18 +48,13 @@ class MemoryManager():
             name, identifier = identifier.split(DYNAMIC_PREFIX)
             id_index, additional_commands = self.get_index(identifier)
             array = self.get_array(name)
+            self.add_constant(array.index_of_0)
             new_index = self.first_free_index
             self.first_free_index += 1
 
             additional_commands += [
-                f'LOAD {id_index}',
-                f'JNEG k_4',
-                f'LOAD {CONST_PREFIX}{array.index}',
+                f'LOAD {CONST_PREFIX}{array.index_of_0}',
                 f'ADD {id_index}',
-                f'JUMP k_3',
-                f'LOAD {CONST_PREFIX}{array.index}',
-                f'SUB {id_index}',
-
                 f'STORE {new_index}'
             ]
 
@@ -103,11 +99,12 @@ class Array():
     def __init__(self, name, start, end, lineno):
         if not self._is_start_before_end(start, end):
             raise ArrayWrongSizeDeclaration(
-                f'{lineno}: Starting index of array must be bigger than ending.')
+                f'Błąd w linii {lineno}: niewłaściwy zakres tablicy {name}')
         self.name = name
         self.start = start
         self.end = end
-        self.index = None
+        self.index_start = None
+        self.index_of_0 = None
 
     def __eq__(self, other):
         return self.name == other.name
@@ -125,8 +122,9 @@ class Array():
     def length(self):
         return self.end - self.start + 1
 
-    def get_index(self, i):
-        if i > 0:
-            return self.index + i
-        else:
-            return self.index - i
+    def set_starting_index(self, index):
+        self.index_start = index
+        self.index_of_0 = self.index_start - self.start
+
+    def get_index(self, index):
+        return self.index_of_0 + index

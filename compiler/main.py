@@ -9,16 +9,19 @@ def main():
         input_file = sys.argv[1]
         output_file = sys.argv[2]
     except Exception:
-        print('Not enoght arguments')
+        print('Nieprawidłowa liczba parametrów wejściowych.')
         exit()
 
     with open(input_file, 'r') as f:
         input_data = f.read()
 
-    result = parser.parse(input_data, tracking=True)
-    result = process(result, memory_manager)
+    try:
+        result = parser.parse(input_data, tracking=True)
+        result = process(result, memory_manager)
+    except Exception as e:
+        print(e)
+        exit()
 
-    # print(result)
     with open(output_file, 'w') as f:
         f.write('\n'.join(result))
 
