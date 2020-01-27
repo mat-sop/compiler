@@ -1,4 +1,4 @@
-from .condition import con_ge, con_geq
+from .condition import con_ge, con_geq, con_le
 from .loop import while_do
 
 
@@ -24,15 +24,10 @@ def minus(index1, index2):
 
 def times(index1, index2):
     '''
-    def t(a, b):
+    def times(a, b):
         result = 0
         factor = 1
-        left = -b if b < 0 else b
-        while left > factor:  # loop_1
-            factor *= 2
-        while left > 0:  # loop_2
-            while (factor - 1) > left:  # loop_3
-                factor /= 2
+        left = -b if b < 0 else b con_geq,
             result += factor * a
             left = left - factor
         return result if b > 0 else -result
@@ -123,42 +118,130 @@ def times(index1, index2):
 
 
 def div(index1, index2):
-    """
-    def divide(a, b):
-        q = 0
-        while a >= b:
-            a -= b
-            q += 1
-        return (q, a)
-    """
-    a = 2
-    b = index2
-    q = 3
+    '''
+    def div(index1, index2):
+        a = index1
+        b = index2
+        factor = 1
+        left = a
+        result = 0
+        tmp = b
+        while(factor < left):  # loop1
+            factor *= 2
+            tmp *= 2
+
+        while(left >= b):  # loop2
+            while (tmp > left):  # loop3
+                factor = factor/2
+                tmp = tmp/2
+            result += factor
+            left = left - tmp
+        return result
+    '''
+
+    factor = 2
+    left = 3
+    result = 4
+    tmp = 5
+    pow2 = 6
+    a = 7
+    b = 8
 
     initialize = [
-        f'LOAD {index1}',
-        f'STORE {a}',
-        'SUB 0',
-        f'STORE {q}'
-    ]
-    condition = con_geq(a, b)
-    loop = [
         f'LOAD {a}',
-        f'SUB {b}',
+        f'STORE {left}',
+        f'LOAD {b}',
+        f'STORE {tmp}',
+        'SUB 0',
+        f'STORE {result}',
+        f'INC',
+        f'STORE {factor}',
+        f'STORE {pow2}'
+    ]
+
+    loop1_condition = con_le(factor, left)
+    loop1_commands = [
+        f'LOAD {factor}',
+        f'SHIFT {pow2}',
+        f'STORE {factor}',
+        f'LOAD {tmp}',
+        f'SHIFT {pow2}',
+        f'STORE {tmp}',
+    ]
+    loop1 = while_do(loop1_condition, loop1_commands)
+
+    loop3_condition = con_ge(tmp, left)
+    loop3_commands = [
+        f'LOAD {factor}',
+        f'SHIFT {pow2}',
+        f'STORE {factor}',
+        f'LOAD {tmp}',
+        f'SHIFT {pow2}',
+        f'STORE {tmp}',
+    ]
+    loop3 = [
+        'SUB 0',
+        'DEC',
+        f'STORE {pow2}',
+        *while_do(loop3_condition, loop3_commands)
+    ]
+
+    loop2_condition = con_geq(left, b)
+    loop2_commands = [
+        *loop3,
+        f'LOAD {result}',
+        f'ADD {factor}',
+        f'STORE {result}',
+        f'LOAD {left}',
+        f'SUB {tmp}',
+        f'STORE {left}'
+    ]
+    loop2 = while_do(loop2_condition, loop2_commands)
+
+    change_signs_to_plus = [
+        f'LOAD {index1}',
+        'JPOS k_3',
+        f'SUB {index1}',
+        f'SUB {index1}',
         f'STORE {a}',
-        f'LOAD {q}',
-        'INC',
-        f'STORE {q}'
+        f'LOAD {index2}',
+        'JPOS k_3',
+        f'SUB {index2}',
+        f'SUB {index2}',
+        f'STORE {b}',
     ]
+
+    fix_sign = [
+        f'LOAD {index1}',
+        'JPOS k_5',
+        f'LOAD {result}',
+        f'SUB {result}',
+        f'SUB {result}',
+        f'STORE {result}',
+
+        f'LOAD {index2}',
+        'JPOS k_5',
+        f'LOAD {result}',
+        f'SUB {result}',
+        f'SUB {result}',
+        f'STORE {result}'
+    ]
+
     division = [
+        *change_signs_to_plus,
         *initialize,
-        *while_do(condition, loop),
-        f'LOAD {q}'
+        *loop1,
+        *loop2,
+        *fix_sign,
+        f'LOAD {result}'
     ]
+
     return [
         f'LOAD {index2}',
+        f'JZERO k_{len(division)+3}',
+        f'LOAD {index1}',
         f'JZERO k_{len(division)+1}',
-        *division,
+        *division
     ]
 
 
