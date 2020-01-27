@@ -1,4 +1,5 @@
 from .condition import con_ge, con_geq, con_le
+from .conditional import if_then
 from .loop import while_do
 
 
@@ -246,28 +247,118 @@ def div(index1, index2):
 
 
 def mod(index1, index2):
-    a = 2
+    '''
+    def modd(index1, index2):
+        a = index1
+        b = index2
+
+        scaled_divisor = b
+        remain = a
+        result = 0
+        multiple = 1
+
+        while(scaled_divisor < a):  # loop1
+            scaled_divisor *= 2
+            multiple *= 2
+
+        tmp = True  # pythonic do-while  # loop2
+        while tmp:
+            if (remain >= scaled_divisor):  # if2
+                remain -= scaled_divisor
+                result += multiple
+            scaled_divisor = scaled_divisor//2
+            multiple = multiple//2
+            tmp = bool(multiple != 0)
+
+        return remain
+    '''
+
+    scaled_divisor = 2
+    remain = 3
+    result = 4
+    multiple = 5
+    pow2 = 6
+    a = index1
     b = index2
-    q = 3
 
     initialize = [
-        f'LOAD {index1}',
-        f'STORE {a}',
-        'SUB 0',
-        f'STORE {q}'
-    ]
-    condition = con_geq(a, b)
-    loop = [
+        f'LOAD {b}',
+        f'STORE {scaled_divisor}',
         f'LOAD {a}',
-        f'SUB {b}',
-        f'STORE {a}',
-        f'LOAD {q}',
+        f'STORE {remain}',
+        'SUB 0',
+        f'STORE {result}',
         'INC',
-        f'STORE {q}'
+        f'STORE {multiple}',
+        f'STORE {pow2}'
     ]
-    mod = [
+
+    loop1_condition = con_le(scaled_divisor, a)
+    loop1_commands = [
+        f'LOAD {scaled_divisor}',
+        f'SHIFT {pow2}',
+        f'STORE {scaled_divisor}',
+        f'LOAD {multiple}',
+        f'SHIFT {pow2}',
+        f'STORE {multiple}'
+    ]
+    loop1 = while_do(loop1_condition, loop1_commands)
+
+    if1_condition = con_geq(remain, scaled_divisor)
+    if1_commands = [
+        f'LOAD {remain}',
+        f'SUB {scaled_divisor}',
+        f'STORE {remain}',
+        f'LOAD {result}',
+        f'ADD {multiple}',
+        f'STORE {result}'
+    ]
+    if1 = if_then(if1_condition, if1_commands)
+
+    loop2_commands = [
+        *if1,
+        f'LOAD {scaled_divisor}',
+        f'SHIFT {pow2}',
+        f'STORE {scaled_divisor}',
+        f'LOAD {multiple}',
+        f'SHIFT {pow2}',
+        f'STORE {multiple}'
+    ]
+    loop2 = [
+        'SUB 0',
+        'DEC',
+        f'STORE {pow2}',
+        *loop2_commands,
+        f'LOAD {multiple}',
+        'JZERO k_2',
+        f'JUMP k_{-len(loop2_commands)-2}'
+    ]
+
+    change_signs_to_plus = [
+        f'LOAD {index1}',
+        'JPOS k_3',
+        f'SUB {index1}',
+        f'SUB {index1}',
+        f'STORE {a}',
+        f'LOAD {index2}',
+        'JPOS k_3',
+        f'SUB {index2}',
+        f'SUB {index2}',
+        f'STORE {b}',
+    ]
+
+    modulo = [
+        *change_signs_to_plus,
         *initialize,
-        *while_do(condition, loop),
-        f'LOAD {a}'
+        *loop1,
+        *loop2,
+        f'LOAD {remain}'
     ]
-    return mod
+
+    return [
+        f'LOAD {index2}',
+        f'JZERO k_{len(modulo)+3}',
+        f'LOAD {index1}',
+        f'JZERO k_{len(modulo)+1}',
+        *modulo
+    ]
