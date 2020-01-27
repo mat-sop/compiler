@@ -1,4 +1,4 @@
-from exceptions import ArrayWrongSizeDeclaration
+from exceptions import ArrayWrongSizeDeclaration, VariableMultipleDeclaration, VariableNotDeclared
 
 from config import CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX, STATIC_PREFIX
 
@@ -13,7 +13,16 @@ class MemoryManager():
 
         self.first_free_index = 20
 
+    def is_variable_declared(self, name):
+        for v in self.variables:
+            if v.name == name:
+                return True
+        return False
+
     def add_variable(self, name, lineno):
+        if self.is_variable_declared(name):
+            raise VariableMultipleDeclaration(f'Błąd w linii {lineno-1}: druga deklaracja {name}')
+
         self.variables.append(Variable(name, self.first_free_index))
         self.first_free_index += 1
 
@@ -36,7 +45,7 @@ class MemoryManager():
             if a.name == name:
                 return a
 
-    def get_index(self, identifier, dynamic_assign=False):
+    def get_index(self, identifier, lineno, dynamic_assign=False):
         if CONST_PREFIX in identifier:  # NUM
             return identifier, []
 
@@ -46,7 +55,7 @@ class MemoryManager():
 
         elif DYNAMIC_PREFIX in identifier:  # name(identifier)
             name, identifier = identifier.split(DYNAMIC_PREFIX)
-            id_index, additional_commands = self.get_index(identifier)
+            id_index, additional_commands = self.get_index(identifier, lineno)
             array = self.get_array(name)
             self.add_constant(array.index_of_0)
             new_index = self.first_free_index
@@ -99,7 +108,7 @@ class Array():
     def __init__(self, name, start, end, lineno):
         if not self._is_start_before_end(start, end):
             raise ArrayWrongSizeDeclaration(
-                f'Błąd w linii {lineno}: niewłaściwy zakres tablicy {name}')
+                f'Błąd w linii {lineno-1}: niewłaściwy zakres tablicy {name}')
         self.name = name
         self.start = start
         self.end = end

@@ -15,12 +15,12 @@ def main():
     with open(input_file, 'r') as f:
         input_data = f.read()
 
-    try:
-        result = parser.parse(input_data, tracking=True)
-        result = process(result, memory_manager)
-    except Exception as e:
-        print(e)
-        exit()
+    # try:
+    result = parser.parse(input_data, tracking=True)
+    result = process(result, memory_manager)
+    # except Exception as e:
+    #     print(e)
+    #     exit()
 
     with open(output_file, 'w') as f:
         f.write('\n'.join(result))

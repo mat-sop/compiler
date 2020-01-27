@@ -57,7 +57,7 @@ def p_commands_command(p):
 def p_command_assign(p):
     '''command : identifier ASSIGN expression SEMICOLON'''
     dynamic_array = True if DYNAMIC_PREFIX in p[1] else False
-    index, commands = memory_manager.get_index(p[1], dynamic_array)
+    index, commands = memory_manager.get_index(p[1], p.lexer.lineno, dynamic_array)
     p[0] = commands + p[3] + assign(index, dynamic_array)
 
 
@@ -83,111 +83,111 @@ def p_command_do_while(p):
 
 def p_command_for_from_to_do(p):
     '''command : FOR ID FROM value TO value DO commands ENDFOR'''
-    start_index, commands1 = memory_manager.get_index(p[4])
-    end_index, commands2 = memory_manager.get_index(p[6])
+    start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
+    end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
     p[0] = commands1 + commands2 + for_to(f'{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
 
 
 def p_command_for_from_downto_do(p):
     '''command : FOR ID FROM value DOWNTO value DO commands ENDFOR'''
-    start_index, commands1 = memory_manager.get_index(p[4])
-    end_index, commands2 = memory_manager.get_index(p[6])
+    start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
+    end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
     p[0] = commands1 + commands2 + for_downto(f'{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
     dynamic_array = True if DYNAMIC_PREFIX in p[2] else False
-    index, commands = memory_manager.get_index(p[2], dynamic_array)
+    index, commands = memory_manager.get_index(p[2], p.lexer.lineno, dynamic_array)
     p[0] = commands + read(index, dynamic_array)
 
 
 def p_command_write(p):
     '''command : WRITE value SEMICOLON'''
-    index, commands = memory_manager.get_index(p[2])
+    index, commands = memory_manager.get_index(p[2], p.lexer.lineno)
     p[0] = commands + write(index)
 
 
 def p_expression_value(p):
     '''expression : value'''
-    index, commands = memory_manager.get_index(p[1])
+    index, commands = memory_manager.get_index(p[1], p.lexer.lineno)
     p[0] = commands + value(index)
 
 
 def p_expression_plus(p):
     '''expression : value PLUS value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + plus(index1, index2)
 
 
 def p_expression_minus(p):
     '''expression : value MINUS value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + minus(index1, index2)
 
 
 def p_expression_times(p):
     '''expression : value TIMES value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + times(index1, index2)
 
 
 def p_expression_div(p):
     '''expression : value DIV value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + div(index1, index2)
 
 def p_expression_mod(p):
     '''expression : value MOD value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + mod(index1, index2)
 
 
 def p_condition_eq(p):
     '''condition : value EQ value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_eq(index1, index2)
 
 
 def p_condition_neq(p):
     '''condition : value NEQ value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_neq(index1, index2)
 
 
 def p_condition_le(p):
     '''condition : value LE value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_le(index1, index2)
 
 
 def p_condition_ge(p):
     '''condition : value GE value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_ge(index1, index2)
 
 
 def p_condition_leq(p):
     '''condition : value LEQ value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_leq(index1, index2)
 
 
 def p_condition_geq(p):
     '''condition : value GEQ value'''
-    index1, commands1 = memory_manager.get_index(p[1])
-    index2, commands2 = memory_manager.get_index(p[3])
+    index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
+    index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_geq(index1, index2)
 
 
@@ -218,7 +218,7 @@ def p_identifier_tab_num(p):
 
 
 def p_error(p):
-    raise Exception(f'exception: {p.lineno}, {p.value}')
+    raise Exception(f'Błąd w linii {p.lineno}: nierozpoznany napis {p.value}')
 
 
 parser = yacc.yacc()
