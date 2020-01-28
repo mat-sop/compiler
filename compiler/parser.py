@@ -58,6 +58,7 @@ def p_command_assign(p):
     '''command : identifier ASSIGN expression SEMICOLON'''
     dynamic_array = True if DYNAMIC_PREFIX in p[1] else False
     index, commands = memory_manager.get_index(p[1], p.lexer.lineno, dynamic_array)
+    memory_manager.initialize_variable(p[1])
     p[0] = commands + p[3] + assign(index, dynamic_array)
 
 
@@ -83,6 +84,8 @@ def p_command_do_while(p):
 
 def p_command_for_from_to_do(p):
     '''command : FOR ID FROM value TO value DO commands ENDFOR'''
+    memory_manager.raise_error_if_variable_not_initialized(p[4], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[6], p.lexer.lineno)
     start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
     end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
@@ -91,6 +94,8 @@ def p_command_for_from_to_do(p):
 
 def p_command_for_from_downto_do(p):
     '''command : FOR ID FROM value DOWNTO value DO commands ENDFOR'''
+    memory_manager.raise_error_if_variable_not_initialized(p[4], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[6], p.lexer.lineno)
     start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
     end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
@@ -98,6 +103,7 @@ def p_command_for_from_downto_do(p):
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
+    memory_manager.initialize_variable(p[2])
     dynamic_array = True if DYNAMIC_PREFIX in p[2] else False
     index, commands = memory_manager.get_index(p[2], p.lexer.lineno, dynamic_array)
     p[0] = commands + read(index, dynamic_array)
@@ -105,18 +111,22 @@ def p_command_read(p):
 
 def p_command_write(p):
     '''command : WRITE value SEMICOLON'''
+    memory_manager.raise_error_if_variable_not_initialized(p[2], p.lexer.lineno-1)
     index, commands = memory_manager.get_index(p[2], p.lexer.lineno)
     p[0] = commands + write(index)
 
 
 def p_expression_value(p):
     '''expression : value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
     index, commands = memory_manager.get_index(p[1], p.lexer.lineno)
     p[0] = commands + value(index)
 
 
 def p_expression_plus(p):
     '''expression : value PLUS value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + plus(index1, index2)
@@ -124,6 +134,8 @@ def p_expression_plus(p):
 
 def p_expression_minus(p):
     '''expression : value MINUS value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + minus(index1, index2)
@@ -131,6 +143,8 @@ def p_expression_minus(p):
 
 def p_expression_times(p):
     '''expression : value TIMES value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + times(index1, index2)
@@ -138,12 +152,16 @@ def p_expression_times(p):
 
 def p_expression_div(p):
     '''expression : value DIV value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + div(index1, index2)
 
 def p_expression_mod(p):
     '''expression : value MOD value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + mod(index1, index2)
@@ -151,6 +169,8 @@ def p_expression_mod(p):
 
 def p_condition_eq(p):
     '''condition : value EQ value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_eq(index1, index2)
@@ -158,6 +178,8 @@ def p_condition_eq(p):
 
 def p_condition_neq(p):
     '''condition : value NEQ value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_neq(index1, index2)
@@ -165,6 +187,8 @@ def p_condition_neq(p):
 
 def p_condition_le(p):
     '''condition : value LE value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_le(index1, index2)
@@ -172,6 +196,8 @@ def p_condition_le(p):
 
 def p_condition_ge(p):
     '''condition : value GE value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_ge(index1, index2)
@@ -179,6 +205,8 @@ def p_condition_ge(p):
 
 def p_condition_leq(p):
     '''condition : value LEQ value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_leq(index1, index2)
@@ -186,6 +214,8 @@ def p_condition_leq(p):
 
 def p_condition_geq(p):
     '''condition : value GEQ value'''
+    memory_manager.raise_error_if_variable_not_initialized(p[1], p.lexer.lineno)
+    memory_manager.raise_error_if_variable_not_initialized(p[3], p.lexer.lineno)
     index1, commands1 = memory_manager.get_index(p[1], p.lexer.lineno)
     index2, commands2 = memory_manager.get_index(p[3], p.lexer.lineno)
     p[0] = commands1 + commands2 + con_geq(index1, index2)

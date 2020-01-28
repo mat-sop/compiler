@@ -6,6 +6,10 @@ class VariableNotDeclared(Exception):
     '''Variable used without declaration.'''
 
 
+class VariableNotInitialized(Exception):
+    '''Variable accessed when not yet initialized'''
+
+
 class ArrayWrongSizeDeclaration(Exception):
     '''Startind index of array was bigger than ending'''
 

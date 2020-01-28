@@ -1,4 +1,5 @@
-from exceptions import ArrayWrongSizeDeclaration, VariableMultipleDeclaration, VariableNotDeclared
+from exceptions import (ArrayWrongSizeDeclaration, VariableMultipleDeclaration,
+                        VariableNotDeclared, VariableNotInitialized)
 
 from config import CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX, STATIC_PREFIX
 
@@ -18,6 +19,16 @@ class MemoryManager():
             if v.name == name:
                 return True
         return False
+
+    def initialize_variable(self, name):
+        v = self.get_variable(name)
+        v.initialized = True
+
+    def raise_error_if_variable_not_initialized(self, name, lineno):
+        if CONST_PREFIX in name:
+            return
+        elif not self.get_variable(name).initialized:
+            raise VariableNotInitialized(f'Błąd w linii {lineno}: użycie niezainicjowanej zmiennej {name}')
 
     def add_variable(self, name, lineno):
         if self.is_variable_declared(name):
@@ -92,6 +103,7 @@ class Variable():
         self.name = name
         self.index = index
         self.length = 1
+        self.initialized = False
 
     def __eq__(self, other):
         return self.name == other.name

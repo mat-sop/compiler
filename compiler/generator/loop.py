@@ -37,7 +37,6 @@ def for_downto(iterator, start, end, expression, free_index):
     return [
         f'LOAD {start}',
         f'STORE {iterator}',
-        '### iterator_start___{iterator}'
         f'LOAD {end}',
         f'STORE {free_index}',
 
@@ -48,6 +47,5 @@ def for_downto(iterator, start, end, expression, free_index):
         f'LOAD {iterator}',
         'DEC',
         f'STORE {iterator}',
-        '### iterator_end___{iterator}',
         f'JUMP k_{-len(expression)-6}'
     ]
