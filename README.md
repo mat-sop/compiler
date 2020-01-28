@@ -1,8 +1,5 @@
-### compiler
+### Instalacja
+`pip3 install ply==3.11`
 
-### Install
-`pip install pipenv`
-`pipenv install`
-
-### Usage
-`pipenv run python compiler/main.py input_file output_file`
+### Użycie
+`python3 compiler/main.py input_file output_file`
