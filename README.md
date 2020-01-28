@@ -10,6 +10,14 @@ Autor: Mateusz Sopiński
 - `memory.py` moduł służący do zarządzania pamięcią maszyny wirtualnej
 - `process.py` moduł służący do ustalenia, indeksów, modyfikacji kodu wyjściowego
 - `parsetab.py, parser.out` - pliki wygenerowane przez bibliotekę
+- `generator` folder zawierający metody generujące kod wyjściowy
+    - `assign.py` przypisanie
+    - `condition.py` warunki logiczne
+    - `conditional.py` instrukcje warunkowe
+    - `const.py` generowanie stałych
+    - `expression.py` operatory +,-,*,/,%
+    - `io.py` operacje wejścia/wyjścia
+    - `loop.py` pętle
 
 ### Instalacja
 `pip3 install ply==3.11`
