@@ -278,8 +278,8 @@ def mod(index1, index2):
     result = 4
     multiple = 5
     pow2 = 6
-    a = index1
-    b = index2
+    a = 7
+    b = 8
 
     initialize = [
         f'LOAD {b}',
@@ -347,12 +347,31 @@ def mod(index1, index2):
         f'STORE {b}',
     ]
 
+    fix_sign = [
+        f'LOAD {index1}',
+        f'JPOS k_12',
+        f'LOAD {index2}',
+        f'JPOS k_6',
+        f'LOAD {remain}',
+        f'SUB {remain}',
+        f'SUB {remain}',
+        f'STORE {remain}',
+        f'JUMP k_3',
+        f'LOAD {index2}',
+        f'SUB {remain}',
+        f'STORE {remain}',
+        f'JUMP k_5',
+        f'LOAD {index2}',
+        f'JPOS k_3',
+        f'ADD {remain}',
+        f'STORE {remain}'
+    ]
+
     modulo = [
         *change_signs_to_plus,
         *initialize,
         *loop1,
-        *loop2,
-        f'LOAD {remain}'
+        *loop2
     ]
 
     return [
@@ -360,5 +379,7 @@ def mod(index1, index2):
         f'JZERO k_{len(modulo)+3}',
         f'LOAD {index1}',
         f'JZERO k_{len(modulo)+1}',
-        *modulo
+        *modulo,
+        *fix_sign,
+        f'LOAD {remain}'
     ]
