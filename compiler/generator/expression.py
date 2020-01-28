@@ -224,17 +224,19 @@ def div(index1, index2):
 
     fix_sign = [
         f'LOAD {index1}',
-        'JPOS k_5',
+        'JPOS k_6',
         f'LOAD {result}',
         f'SUB {result}',
         f'SUB {result}',
+        f'DEC',
         f'STORE {result}',
 
         f'LOAD {index2}',
-        'JPOS k_5',
+        'JPOS k_6',
         f'LOAD {result}',
         f'SUB {result}',
         f'SUB {result}',
+        'DEC',
         f'STORE {result}'
     ]
 
