@@ -1,5 +1,5 @@
 from .condition import con_ge, con_geq, con_le
-from .conditional import if_then
+from .conditional import if_then, if_then_else
 from .loop import while_do
 
 
@@ -33,8 +33,8 @@ def times(index1, index2):
             left = left - factor
         return result if b > 0 else -result
     '''
-    a = index1
-    b = index2
+    a = 7
+    b = 8
     result = 6
     factor = 5
     left = 4
@@ -43,7 +43,17 @@ def times(index1, index2):
     tmp = 9
     zero = 10
 
+    if_then_else(
+        con_le(index1, index2),
+        [f'LOAD {index1}', f'STORE {b}', f'LOAD {index2}', f'STORE {a}'],
+        [f'LOAD {index1}', f'STORE {a}', f'LOAD {index2}', f'STORE {b}']
+    )
     initialize = [
+        *if_then_else(
+            con_le(index1, index2),
+            [f'LOAD {index1}', f'STORE {b}', f'LOAD {index2}', f'STORE {a}'],
+            [f'LOAD {index1}', f'STORE {a}', f'LOAD {index2}', f'STORE {b}']
+        ),
         'SUB 0',
         f'STORE {result}',  # result = 0
         f'STORE {zero}',
@@ -380,6 +390,8 @@ def mod(index1, index2):
         f'LOAD {index1}',
         f'JZERO k_{len(modulo)+1}',
         *modulo,
+        f'LOAD {remain}',
+        f'JZERO k_{len(fix_sign)+2}',
         *fix_sign,
         f'LOAD {remain}'
     ]
