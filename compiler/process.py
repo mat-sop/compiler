@@ -4,7 +4,7 @@ from exceptions import VariableNotDeclared
 
 
 def process(commands, memory_manager):
-    validate_iterators(commands)
+    validate_iterators(commands, memory_manager)
     commands = remove_comments(commands)
     commands = resolve_constances(commands, memory_manager)
     commands = determine_jumps(commands)
@@ -17,20 +17,28 @@ def len_without_comments(commands):
 
 
 def remove_comments(commands):
+    for i in range(len(commands)):
+        if '# ' in commands[i] and '###' not in commands[i]:
+            commands[i] = commands[i].split('#')[0]
     return [c for c in commands if '#' not in c]
 
 
-def validate_iterators(commands):
+def validate_iterators(commands, memory_manager):
     iterators = []
     for c in commands:
         if 'iterator_start' in c:
+            for v in memory_manager.variables:
+                if v.name == c.split(ITERATOR_PREFIX)[-1]:
+                    raise Exception('uzycie zmiennej globalnej o tej samej nazwie co iterator w zakresie petli')
             iterators.append(c.split(ITERATOR_PREFIX)[-1])
         elif 'iterator_end' in c:
             iterators.remove(c.split(ITERATOR_PREFIX)[-1])
         elif ITERATOR_PREFIX in c:
-            identifier = c.split(ITERATOR_PREFIX)[-1]
+            if 'STORE' in c and '# IT' not in c:
+                raise Exception('modyfikacja iteratora w petli')
+            identifier = c.split(' ')[1].split('_'+ITERATOR_PREFIX)[1]
             if identifier not in iterators:
-                lineno, var_name = c.split(' ')[-1].split('_'+ITERATOR_PREFIX)
+                lineno, var_name = c.split(' ')[1].split('_'+ITERATOR_PREFIX)
                 raise VariableNotDeclared(f'Błąd w linii {lineno}: Niezadeklarowana zmienna {var_name}')
 
 

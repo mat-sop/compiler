@@ -22,7 +22,7 @@ def for_to(iterator, start, end, expression, free_index):
     return [
         f'# iterator_start_{iterator}',
         f'LOAD {start}',
-        f'STORE {iterator}',
+        f'STORE {iterator} # IT',
         f'LOAD {end}',
         f'STORE {free_index}',
 
@@ -32,7 +32,7 @@ def for_to(iterator, start, end, expression, free_index):
         *expression,
         f'LOAD {iterator}',
         'INC',
-        f'STORE {iterator}',
+        f'STORE {iterator} # IT',
         f'JUMP k_{-len_without_comments(expression)-6}',
         f'# iterator_end_{iterator}'
     ]
@@ -42,7 +42,7 @@ def for_downto(iterator, start, end, expression, free_index):
     return [
         f'# iterator_start_{iterator}',
         f'LOAD {start}',
-        f'STORE {iterator}',
+        f'STORE {iterator} # IT',
         f'LOAD {end}',
         f'STORE {free_index}',
 
@@ -52,7 +52,7 @@ def for_downto(iterator, start, end, expression, free_index):
         *expression,
         f'LOAD {iterator}',
         'DEC',
-        f'STORE {iterator}',
+        f'STORE {iterator} # IT',
         f'JUMP k_{-len_without_comments(expression)-6}',
         f'# iterator_end_{iterator}'
     ]
