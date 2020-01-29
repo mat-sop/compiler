@@ -12,21 +12,25 @@ def process(commands, memory_manager):
     return commands
 
 
+def len_without_comments(commands):
+    return len(remove_comments(commands))
+
+
 def remove_comments(commands):
-    return [ c for c in commands if '#' not in c]
+    return [c for c in commands if '#' not in c]
 
 
 def validate_iterators(commands):
     iterators = []
     for c in commands:
         if 'iterator_start' in c:
-            iterators.append(c.split('___'[-1]))
+            iterators.append(c.split(ITERATOR_PREFIX)[-1])
         elif 'iterator_end' in c:
-            iterators.remove(c.split('___'[-1]))
+            iterators.remove(c.split(ITERATOR_PREFIX)[-1])
         elif ITERATOR_PREFIX in c:
-            identifier = c.split(' ')[-1]
+            identifier = c.split(ITERATOR_PREFIX)[-1]
             if identifier not in iterators:
-                lineno, var_name = identifier.split('_'+ITERATOR_PREFIX)
+                lineno, var_name = c.split(' ')[-1].split('_'+ITERATOR_PREFIX)
                 raise VariableNotDeclared(f'Błąd w linii {lineno}: Niezadeklarowana zmienna {var_name}')
 
 

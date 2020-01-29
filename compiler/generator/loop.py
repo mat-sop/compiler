@@ -1,9 +1,12 @@
+from process import len_without_comments
+
+
 def while_do(condition, expression):
     return [
         *condition,
-        f'JZERO k_{len(expression)+2}',
+        f'JZERO k_{len_without_comments(expression)+2}',
         *expression,
-        f'JUMP k_{-len(condition)-len(expression)-1}'
+        f'JUMP k_{-len(condition)-len_without_comments(expression)-1}'
     ]
 
 
@@ -17,6 +20,7 @@ def do_while(condition, expression):
 
 def for_to(iterator, start, end, expression, free_index):
     return [
+        f'# iterator_start_{iterator}',
         f'LOAD {start}',
         f'STORE {iterator}',
         f'LOAD {end}',
@@ -24,17 +28,19 @@ def for_to(iterator, start, end, expression, free_index):
 
         f'LOAD {free_index}',
         f'SUB {iterator}',
-        f'JNEG k_{len(expression)+5}',
+        f'JNEG k_{len_without_comments(expression)+5}',
         *expression,
         f'LOAD {iterator}',
         'INC',
         f'STORE {iterator}',
-        f'JUMP k_{-len(expression)-6}',
+        f'JUMP k_{-len_without_comments(expression)-6}',
+        f'# iterator_end_{iterator}'
     ]
 
 
 def for_downto(iterator, start, end, expression, free_index):
     return [
+        f'# iterator_start_{iterator}',
         f'LOAD {start}',
         f'STORE {iterator}',
         f'LOAD {end}',
@@ -42,10 +48,11 @@ def for_downto(iterator, start, end, expression, free_index):
 
         f'LOAD {iterator}',
         f'SUB {free_index}',
-        f'JNEG k_{len(expression)+5}',
+        f'JNEG k_{len_without_comments(expression)+5}',
         *expression,
         f'LOAD {iterator}',
         'DEC',
         f'STORE {iterator}',
-        f'JUMP k_{-len(expression)-6}'
+        f'JUMP k_{-len_without_comments(expression)-6}',
+        f'# iterator_end_{iterator}'
     ]
