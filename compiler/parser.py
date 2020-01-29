@@ -58,7 +58,7 @@ def p_command_assign(p):
     '''command : identifier ASSIGN expression SEMICOLON'''
     dynamic_array = True if DYNAMIC_PREFIX in p[1] else False
     index, commands = memory_manager.get_index(p[1], p.lexer.lineno, dynamic_array)
-    memory_manager.initialize_variable(p[1])
+    memory_manager.initialize_variable(p[1], p.lexer.lineno)
     p[0] = commands + p[3] + assign(index, dynamic_array)
 
 
@@ -89,7 +89,7 @@ def p_command_for_from_to_do(p):
     start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
     end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
-    p[0] = commands1 + commands2 + for_to(f'{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
+    p[0] = commands1 + commands2 + for_to(f'{p.lexer.lineno}_{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
 
 
 def p_command_for_from_downto_do(p):
@@ -99,11 +99,11 @@ def p_command_for_from_downto_do(p):
     start_index, commands1 = memory_manager.get_index(p[4], p.lexer.lineno)
     end_index, commands2 = memory_manager.get_index(p[6], p.lexer.lineno)
     free_index = memory_manager.get_free_index()
-    p[0] = commands1 + commands2 + for_downto(f'{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
+    p[0] = commands1 + commands2 + for_downto(f'{p.lexer.lineno}_{ITERATOR_PREFIX}{p[2]}', start_index, end_index, p[8], free_index)
 
 def p_command_read(p):
     '''command : READ identifier SEMICOLON'''
-    memory_manager.initialize_variable(p[2])
+    memory_manager.initialize_variable(p[2], p.lexer.lineno)
     dynamic_array = True if DYNAMIC_PREFIX in p[2] else False
     index, commands = memory_manager.get_index(p[2], p.lexer.lineno, dynamic_array)
     p[0] = commands + read(index, dynamic_array)

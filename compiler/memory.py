@@ -1,5 +1,6 @@
-from exceptions import (ArrayWrongSizeDeclaration, VariableMultipleDeclaration,
-                        VariableNotDeclared, VariableNotInitialized)
+from exceptions import (ArrayUsedLikeVariable, ArrayWrongSizeDeclaration,
+                        VariableMultipleDeclaration, VariableNotDeclared,
+                        VariableNotInitialized, VariableUsedLikeArray)
 
 from config import CONST_PREFIX, DYNAMIC_PREFIX, ITERATOR_PREFIX, STATIC_PREFIX
 
@@ -20,14 +21,19 @@ class MemoryManager():
                 return True
         return False
 
-    def initialize_variable(self, name):
-        v = self.get_variable(name)
-        v.initialized = True
+    def initialize_variable(self, name, lineno):
+        v = self.get_variable(name, lineno)
+        if v is not None:
+            v.initialized = True
 
     def raise_error_if_variable_not_initialized(self, name, lineno):
-        if CONST_PREFIX in name:
+        if CONST_PREFIX in name or ITERATOR_PREFIX in name:
             return
-        elif not self.get_variable(name).initialized:
+        v = self.get_variable(name, lineno)
+        if v is None:
+            return
+
+        if not v.initialized:
             raise VariableNotInitialized(f'Błąd w linii {lineno}: użycie niezainicjowanej zmiennej {name}')
 
     def add_variable(self, name, lineno):
@@ -46,15 +52,23 @@ class MemoryManager():
     def add_constant(self, n):
         self.constants.add(int(n))
 
-    def get_variable(self, name):
+    def get_variable(self, name, lineno):
         for v in self.variables:
             if v.name == name:
                 return v
 
-    def get_array(self, name):
+        for a in self.arrays:
+            if a.name == name:
+                raise ArrayUsedLikeVariable(f'Błąd w linii {lineno-1}: niewłaściwe użycie zmiennej tablicowej {name}')
+
+    def get_array(self, name, lineno):
         for a in self.arrays:
             if a.name == name:
                 return a
+
+        for v in self.variables:
+            if v.name == name:
+                raise VariableUsedLikeArray(f'Błąd w linii {lineno-1}: niewłaściwe użycie zmiennej {name}')
 
     def get_index(self, identifier, lineno, dynamic_assign=False):
         if CONST_PREFIX in identifier:  # NUM
@@ -62,12 +76,12 @@ class MemoryManager():
 
         elif STATIC_PREFIX in identifier:  # name(const)
             array_name, array_index = identifier.split(STATIC_PREFIX)
-            return self.get_array(array_name).get_index(int(array_index)), []
+            return self.get_array(array_name, lineno).get_index(int(array_index)), []
 
         elif DYNAMIC_PREFIX in identifier:  # name(identifier)
             name, identifier = identifier.split(DYNAMIC_PREFIX)
             id_index, additional_commands = self.get_index(identifier, lineno)
-            array = self.get_array(name)
+            array = self.get_array(name, lineno)
             self.add_constant(array.index_of_0)
             new_index = self.first_free_index
             self.first_free_index += 1
@@ -86,9 +100,9 @@ class MemoryManager():
             return new_index, additional_commands
 
         else:  # single variable
-            v = self.get_variable(identifier)
+            v = self.get_variable(identifier, lineno)
             if v is None:  # probably iterator
-                return f'{ITERATOR_PREFIX}{identifier}', []
+                return f'{lineno-1}_{ITERATOR_PREFIX}{identifier}', []
             return v.index, []
 
     def get_free_index(self):

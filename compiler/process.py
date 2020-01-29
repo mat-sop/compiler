@@ -1,24 +1,34 @@
 from config import CONST_PREFIX, ITERATOR_PREFIX
 from generator.const import gen_const
+from exceptions import VariableNotDeclared
 
 
 def process(commands, memory_manager):
+    validate_iterators(commands)
+    commands = remove_comments(commands)
     commands = resolve_constances(commands, memory_manager)
     commands = determine_jumps(commands)
     commands = resolve_iterators(commands, memory_manager)
     return commands
 
 
-def validate(commands):
+def remove_comments(commands):
+    return [ c for c in commands if '#' not in c]
+
+
+def validate_iterators(commands):
     iterators = []
     for c in commands:
-        if '###' not in c:
-            continue
-        elif 'iterator_start' in c:
+        if 'iterator_start' in c:
             iterators.append(c.split('___'[-1]))
         elif 'iterator_end' in c:
             iterators.remove(c.split('___'[-1]))
-            
+        elif ITERATOR_PREFIX in c:
+            identifier = c.split(' ')[-1]
+            if identifier not in iterators:
+                lineno, var_name = identifier.split('_'+ITERATOR_PREFIX)
+                raise VariableNotDeclared(f'Błąd w linii {lineno}: Niezadeklarowana zmienna {var_name}')
+
 
 def determine_jumps(commands):
     for i in range(len(commands)):
@@ -49,7 +59,7 @@ def resolve_iterators(commands, memory_manager):
     indexes = {}
     for i in range(len(commands)):
         if ITERATOR_PREFIX in commands[i]:
-            iterator = commands[i].split('_')[-1]
+            iterator = commands[i].split(ITERATOR_PREFIX)[-1]
             if iterator not in indexes:
                 indexes[iterator] = memory_manager.get_free_index()
             index = indexes[iterator]
