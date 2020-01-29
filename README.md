@@ -1,5 +1,6 @@
 ### Kompilator, semestr 2019/2020
 Autor: Mateusz Sopiński
+Nr indeksu: 236531
 
 ### Pliki
 - `lexer.py` deklaracja tokenów
