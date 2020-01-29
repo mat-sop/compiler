@@ -25,7 +25,6 @@ def for_to(iterator, start, end, expression, free_index):
         f'STORE {iterator} # IT',
         f'LOAD {end}',
         f'STORE {free_index}',
-
         f'LOAD {free_index}',
         f'SUB {iterator}',
         f'JNEG k_{len_without_comments(expression)+5}',
@@ -45,7 +44,6 @@ def for_downto(iterator, start, end, expression, free_index):
         f'STORE {iterator} # IT',
         f'LOAD {end}',
         f'STORE {free_index}',
-
         f'LOAD {iterator}',
         f'SUB {free_index}',
         f'JNEG k_{len_without_comments(expression)+5}',
