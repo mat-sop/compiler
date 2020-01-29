@@ -20,9 +20,9 @@ def remove_comments(commands):
     tmp = commands.copy()
     for i in range(len(tmp)):
         if '# ' in tmp[i] and '###' not in tmp[i]:
-            tmp[i] = tmp[i].split('#')[0]
-    return [c for c in tmp if '#' not in c]
-
+            tmp[i] = tmp[i].split(' #')[0]
+    tmp = [c for c in tmp if '#' not in c]
+    return [c for c in tmp if c != '']
 
 def validate_iterators(commands, memory_manager):
     iterators = []
@@ -41,6 +41,7 @@ def validate_iterators(commands, memory_manager):
                 raise VariableNotDeclared(f'Błąd w linii {lineno}: Niezadeklarowana zmienna {var_name}')
             if 'STORE' in c and '# IT' not in c:
                 raise Exception('modyfikacja iteratora w petli')
+
 
 def determine_jumps(commands):
     for i in range(len(commands)):
