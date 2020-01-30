@@ -253,7 +253,10 @@ def mod(index1, index2):
         *change_signs_to_plus,
         *initialize,
         *loop1,
-        *loop2
+        *loop2,
+        f'LOAD {remain}',
+        f'JZERO k_{len(fix_sign)+2}',
+        *fix_sign,
     ]
 
     return [
@@ -262,9 +265,6 @@ def mod(index1, index2):
         f'LOAD {index1}',
         f'JZERO k_{len(modulo)+1}',
         *modulo,
-        f'LOAD {remain}',
-        f'JZERO k_{len(fix_sign)+2}',
-        *fix_sign,
         f'LOAD {remain}'
     ]
 
@@ -360,12 +360,29 @@ def div(index1, index2):
             f'STORE {result}',
 
             f'LOAD {remain}',
-            f'JZERO k_6',
+            f'JZERO k_23',
             f'LOAD {result}',
-            f'JPOS k_4',
-            f'LOAD {result}',
-            'DEC',
-            f'STORE {result}'
+            f'JPOS k_21',
+            f'JZERO k_5',
+                f'LOAD {result}',
+                'DEC',
+                f'STORE {result}',
+            f'JUMP k_16',
+                f'LOAD {index1}',
+                f'JPOS k_7',
+                    f'LOAD {index2}',
+                    f'JNEG k_5',
+                        f'LOAD {result}',
+                        'DEC',
+                        f'STORE {result}',
+                        'JUMP k_8',
+                f'LOAD {index2}',
+                f'JPOS k_6',
+                    f'LOAD {index1}',
+                    f'JNEG k_4',
+                        f'LOAD {result}',
+                        'DEC',
+                        f'STORE {result}'
         ]
 
     division = [
