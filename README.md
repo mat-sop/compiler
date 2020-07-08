@@ -1,27 +1,62 @@
-### Kompilator, semestr 2019/2020
-Autor: Mateusz Sopiński
-Nr indeksu: 236531
+# jfft_compiler
+Compiler of a simple imperative language, created as final project for 'Formal Languages and Translation Techniques' course.
 
-### Pliki
-- `lexer.py` deklaracja tokenów
-- `parser.py` deklaracja gramatyki, wywołania funkcji które generują kod wynikowy
-- `config.py` deklaracje stałych pomocniczych
-- `exceptions.py` deklaracje obsługiwanych błędów
-- `main.py` obsługa wejścia/wyjścia
-- `memory.py` moduł służący do zarządzania pamięcią maszyny wirtualnej
-- `process.py` moduł służący do ustalenia, indeksów, modyfikacji kodu wyjściowego
-- `parsetab.py, parser.out` - pliki wygenerowane przez bibliotekę
-- `generator` folder zawierający metody generujące kod wyjściowy
-    - `assign.py` przypisanie
-    - `condition.py` warunki logiczne
-    - `conditional.py` instrukcje warunkowe
-    - `const.py` generowanie stałych
-    - `expression.py` operatory +,-,*,/,%
-    - `io.py` operacje wejścia/wyjścia
-    - `loop.py` pętle
 
-### Instalacja
-`pip3 install ply==3.11`
+## Language`s grammar
+    program       -> DECLARE declarations BEGIN commands END
+                | BEGIN commands END
 
-### Użycie
-`python3 compiler/main.py input_file output_file`
+    declarations  -> declarations, pidentifier
+                | declarations, pidentifier(num:num)
+                | pidentifier
+                | pidentifier(num:num)
+
+    commands      -> commands command
+                | command
+
+    command       -> identifier ASSIGN expression;
+                | IF condition THEN commands ELSE commands ENDIF
+                | IF condition THEN commands ENDIF
+                | WHILE condition DO commands ENDWHILE
+                | DO commands WHILE condition ENDDO
+                | FOR pidentifier FROM value TO value DO commands ENDFOR
+                | FOR pidentifier FROM value DOWNTO value DO commands ENDFOR
+                | READ identifier;
+                | WRITE value;
+
+    expression    -> value
+                | value PLUS value
+                | value MINUS value
+                | value TIMES value
+                | value DIV value
+                | value MOD value
+
+    condition     -> value EQ value
+                | value NEQ value
+                | value LE value
+                | value GE value
+                | value LEQ value
+                | value GEQ value
+
+    value         -> num
+                | identifier
+
+    identifier    -> pidentifier
+                | pidentifier(pidentifier)
+                | pidentifier(num)
+
+
+## Virtual machine & examples
+Virtual machine and examples can be found in [this](assigment/virtual_machine.zip) zip file. More tests are available [here](assigment/tests.zip).
+
+
+## Dependencies
+Python version: `3.7`
+
+    pip install pipenv
+    pipenv install
+
+
+## Usage
+`python compiler/main.py input_file output_file`
+
